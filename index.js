@@ -2,6 +2,7 @@ var express = require('express')
 var cors = require('cors')
 var bodyParse = require("body-parser")
 var mysql = require('mysql')
+const { json } = require('body-parser')
 var app = express()
 //Kết nối với localhost
 app.use(cors())
@@ -37,11 +38,12 @@ app.get("/getStudent", function (req, res) {
 app.post("/addStudent", function (req, res) {
     var data = req.body
     console.log(data);
-    var sql = "insert into sinhviens values" + data
-    conn.query(sql, function (errr, sinhvien) {
+    var sql = "insert into sinhviens set ?"
+    conn.query(sql, data, function (errr, sinhvien) {
         //Kiem tra nếu dữ liệu sai
         if (errr) {
             res.status(400).json("Lỗi thêm sinh viên nhá")
+            console.log(errr);
         } else {
             res.status(200).json(sinhvien)
         }
@@ -83,6 +85,22 @@ app.get("/deleteStuden/:mssv", function (req, res) {
             console.log(errr);
         } else {
             res.status(200).json("Xoa thanh cong nha" + `${mssv}`)
+            console.log("Xoa Thanh cng");
+        }
+    })
+})
+//Tìm người dùng theo tên đăng nhập
+app.get("/getUsername/:username", function (req, res) {
+    var username = req.params.username
+    console.log(username);
+    var sql = `select * from accounts where username=${req.params.username}`
+    conn.query(sql, function (err, sinhvien) {
+        //Kiem tra neu loi nhas
+        if (err) {
+            res.status(400).json("Loi tim kiem du lieu nha")
+            console.log(err);
+        } else {
+            res.status(200).json(sinhvien)
         }
     })
 })
